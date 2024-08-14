@@ -13,7 +13,7 @@ import logging
 import matplotlib.pyplot as plt
 from dotenv import load_dotenv
 
-from algo_trading.Data.log_config import setup_logging
+from algo_trading.log_config import setup_logging
 # from algo_trading.Data.data_fetching import 
 
 # %%
@@ -33,13 +33,12 @@ class PreProcessing:
         start_time = datetime.strptime('09:30', '%H:%M').time()
         end_time = datetime.strptime('16:05', '%H:%M').time()
         df = df[(df['time'] >= start_time) & (df['time'] <= end_time)]
+        self.df = df.drop(columns=['time'])
         return self
     
-    def calculate_log_return(self, column = 'close'):
-        self.df['log_ret'] = np.log(self.df[column]) - np.log(self.df[column].shift(1))[1:]
-        return self
     
     def setting_index(self):
+        self.df['date'] = pd.to_datetime(self.df['date'])
         self.df.index = self.df['date']
         return self
     
