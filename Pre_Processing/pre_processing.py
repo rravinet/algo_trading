@@ -31,7 +31,7 @@ class PreProcessing:
         df['date'] = pd.to_datetime(df['date'])
         df['time'] = df['date'].dt.time
         start_time = datetime.strptime('09:30', '%H:%M').time()
-        end_time = datetime.strptime('16:05', '%H:%M').time()
+        end_time = datetime.strptime('16:00', '%H:%M').time()
         df = df[(df['time'] >= start_time) & (df['time'] <= end_time)]
         self.df = df.drop(columns=['time'])
         return self
