@@ -1,28 +1,37 @@
-# ALGO_TRADING - Under Development
+# Algo Trading - Under Developement
 
-## Overview
-
-This project implements an end-to-end pipeline for algorithmic trading, including data fetching, preprocessing, feature engineering, modeling, and strategy backtesting.
+This project implements an** ****algorithmic trading pipeline** that fetches financial data from a SQL database, preprocesses it, applies feature engineering techniques, and prepares the data for algorithmic trading and strategy execution.
 
 ## Workflow
 
-The workflow consists of the following steps:
+### 1. Fetching Data
 
-1. **Data Fetching (`data_fetcher.ipynb`)**
+The pipeline uses the** ****`DataFetcher` class** in** **`data_fetcher.py` to fetch stock data from the SQL database. This data is pulled from the tables that were populated by the** **`fin_database` project.
 
-   - Fetches and loads data from the `Fin_Database` repository stored in PostgreSQL into the project. The data is then used in subsequent steps of the pipeline.
-2. **Preprocessing (`Pre_Processing/preprocessing.ipynb`)**
+### 2. Preprocessing Data
 
-   - This step cleans the raw data by handling missing values, standardising formats, and transforming the data into a format ready for further processing. The cleaned data is then saved for the feature engineering stage.
-3. **Feature Engineering (`Feature_Engineering/feature_engineering.ipynb`, `Feature_Engineering/vol_prediction.ipynb`)**
+After fetching the data, the pipeline preprocesses it using the** ****`PreProcessing` class** in** **`pre_processing.py`. This may involve:
 
-   - New features are created from the cleaned data, such as technical indicators, rolling statistics, and any other relevant metrics. The `vol_prediction.ipynb` notebook specifically focuses on predicting intraday volatility .
-4. **Modelling (`Modelling/model.ipynb`)**
+* **Filtering Market Hours** : Ensuring that only market trading hours are included.
+* **Setting Indexes** : Setting the appropriate date/time columns as the index for time series analysis.
+* 
 
-   - Predictive models such as decision trees, random forests, or gradient boosting machines are trained using the features generated in the previous step.
-5. **Backtesting and Strategy Application (`Strategies/backtest_strategy.ipynb`)**
+### 3. Feature Engineering
 
-   - This notebook (currently under development) will perform backtests by applying the predictive models and trading strategies on historical data. The goal is to evaluate the efficacy of different trading strategies by simulating how they would have performed using past data.
-6. **Signal Generation (`signal_generation.ipynb`)**
+Next, the pipeline applies various feature engineering techniques using the** ****`TechnicalIndicators` class** in** **`feature_engineering.py`. These techniques include adding:
 
-   - This notebook (currently under development) will generated signals from the trained models and strategies are produced, visualized, and analysed. These signals may include buy/sell/hold signals, position sizing, or other actionable insights based on the model's predictions.
+* Moving averages
+* Relative Strength Index (RSI)
+* Bollinger Bands
+* Other technical indicators
+
+### 4. Volatility Prediction
+
+Intraday Volatility prediction using the** ****`IntradayVol`**** class in `vol_prediction.py`. Here I am applying the methodology from Young Li's paper titled 
+
+"A PRACTICAL MODEL FOR PREDICTION OF INTRADAY
+VOLATILITY"
+
+### 5. Final Output
+
+The pipeline returns either a single processed DataFrame or a dictionary of processed DataFrames (one per ticker), which can then be used for strategy development and execution.
