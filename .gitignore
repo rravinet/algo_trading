@@ -7,5 +7,5 @@ __pycache__/
 Data/
 *.csv
 Datasets/
-# *ipynb
+Jupyter_Notebooks/
 .yaml

@@ -17,31 +17,6 @@ from algo_trading.log_config import setup_logging
 from Fin_Database.Data.connect import engine, DailyStockData, HourlyStockData, OneMinuteStockData, FiveMinuteStockData,FifteenMinuteStockData, StockSplits, StockNews, CompanyFinancials
 from algo_trading.Pre_Processing.pre_processing import PreProcessing
 
-# %%
-aapl_min = pd.read_parquet('/Users/raphaelravinet/Code/algo_trading/Datasets/Minute_Data/aapl_minute.parquet')
-msft_min = pd.read_parquet('/Users/raphaelravinet/Code/algo_trading/Datasets/Minute_Data/msft_minute.parquet')
-aapl_daily = pd.read_csv('/Users/raphaelravinet/Code/algo_trading/Datasets/Daily_Data/aapl_daily.csv')
-msft_daily = pd.read_csv('/Users/raphaelravinet/Code/algo_trading/Datasets/Daily_Data/msft_daily.csv')
-
-
-# %%
-aapl_hourly = pd.read_parquet('/Users/raphaelravinet/Code/algo_trading/Datasets/Hourly_Data/aapl_hourly.parquet')
-msft_hourly = pd.read_parquet('/Users/raphaelravinet/Code/algo_trading/Datasets/Hourly_Data/msft_hourly.parquet')
-
-# %%
-aapl_daily = PreProcessing(aapl_daily).setting_index().df
-msft_daily = PreProcessing(msft_daily).setting_index().df
-aapl_min = PreProcessing(aapl_min).filter_market_hours().setting_index().df
-msft_min = PreProcessing(msft_min).filter_market_hours().setting_index().df
-aapl_hourly = PreProcessing(aapl_hourly).filter_market_hours().setting_index().df
-msft_hourly = PreProcessing(msft_hourly).filter_market_hours().setting_index().df
-
-
-
-# %%
-fast_periods = [5, 10, 30]
-slow_periods = [50, 100, 200,300]
-periods = fast_periods + slow_periods
 
 # %%
 class TechnicalIndicators:
@@ -49,8 +24,12 @@ class TechnicalIndicators:
         self.df = df
         
     def calculate_log_return(self):
-        self.df['log_ret'] = np.log(self.df['close']) - np.log(self.df['close'].shift(1))[1:]
-        return self.df
+        self.df['log_ret'] = np.log(self.df['close']) - np.log(self.df['close'].shift(1))
+        return self
+   
+    def calculate_return(self):
+        self.df['return'] = self.df['close'].pct_change()
+        return self
 
     def calculate_rsi(self, window=14):
         self.df[f'RSI_{window}'] = ta.momentum.RSIIndicator(self.df['close'], window=window).rsi()
@@ -94,6 +73,10 @@ class TechnicalIndicators:
         self.df['OBV'] = ta.volume.OnBalanceVolumeIndicator(self.df['close'], self.df['volume']).on_balance_volume()
         return self
     
+    def calculate_open_close_diff(self):
+        self.df['o_close_diff'] = self.df['open'] - self.df['close'].shift(1)
+        return self
+    
     
     def calculate_moving_averages(self, periods):
         for period in periods:
@@ -117,20 +100,29 @@ class TechnicalIndicators:
             self.df[f'sma_slope_{period}'] = self.calculate_slope(self.df[f'sma_{period}'], slope_period)
             self.df[f'ema_slope_{period}'] = self.calculate_slope(self.df[f'ema_{period}'], slope_period)
         return self
+    
+    def date_features(self):
+        self.df['day'] = self.df['date'].dt.day
+        self.df['month'] = self.df['date'].dt.month
+        self.df['day_of_week'] = self.df['date'].dt.dayofweek
+        return self
 
     def add_technical_indicators(self, periods, slope_period = 5):
         self.calculate_rsi()
         self.calculate_rsi(window=2)
         self.calculate_macd()
         self.calculate_log_return()
+        self.calculate_return()
         self.calculate_roc()
         self.calculate_stoch()
         self.calculate_adx()
         self.calculate_hl_mean()
+        self.calculate_lower_band()
         self.calculate_atr()
         self.calculate_ibs()
         self.calculate_obv()
         self.calculate_moving_averages(periods)
+        self.date_features()
         # self.calculate_moving_average_slopes(periods, slope_period)
         return self.df
 
@@ -144,7 +136,7 @@ class features:
         self.df['month'] = self.df['date'].dt.month
         self.df['day_of_week'] = self.df['date'].dt.dayofweek
         return self.df
-    #add date/time to next corporate announcement
+    # add date/time to next corporate announcement
     
     
 

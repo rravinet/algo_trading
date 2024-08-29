@@ -19,8 +19,6 @@ from algo_trading.log_config import setup_logging
 # %%
 setup_logging()
 
-
-
 # %%
 class PreProcessing:
     def __init__(self, df, timespan = 'daily'):
@@ -28,7 +26,7 @@ class PreProcessing:
         self.timespan = timespan
         
     def filter_market_hours(self):
-        if self.timespan in ['minute', 'hourly']:   
+        if self.timespan in ['minute', 'hour']:   
             df = self.df.copy()
             df['date'] = pd.to_datetime(df['date'])
             df['time'] = df['date'].dt.time

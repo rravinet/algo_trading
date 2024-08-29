@@ -38,25 +38,14 @@ class Pipeline:
         data = fetcher.get_stock_data(timespan = timespan, start_date = start_date, end_date = end_date, combine = combine)
         return data
     
-    # def preprocess_data(self, data):
-    #     preprocessor = PreProcessing(data).setting_index().df
-    #     return preprocessor
-        
-    # def feature_engineering(self, data, clean = False):
-    #     fe = TechnicalIndicators(data)
-    #     fe.add_technical_indicators(periods = self.periods)
-    #     if clean:
-    #         fe.df.dropna(inplace = True )
-    #     return fe.df
-    
-    def preprocess_data(self, data):
+    def preprocess_data(self, data, timespan):
         if isinstance(data, dict):
             preprocessed_data = {}
             for ticker, df in data.items():
-                preprocessed_data[ticker] = PreProcessing(df).setting_index().df
+                preprocessed_data[ticker] = PreProcessing(df, timespan).pre_processor().df
             return preprocessed_data
         else:
-            return PreProcessing(data).setting_index().df
+            return PreProcessing(data, timespan).pre_processor().df
     
     def feature_engineering(self, data, clean=False):
         if isinstance(data, dict):
@@ -80,7 +69,7 @@ class Pipeline:
                  clean = False):
         
         data = self.fetch_data(start_date=start_date, end_date=end_date, timespan=timespan, combine=combine)
-        preprocessed_data = self.preprocess_data(data)
+        preprocessed_data = self.preprocess_data(data, timespan)
         final_data = self.feature_engineering(preprocessed_data, clean=clean)
         return final_data
     
