@@ -2,7 +2,8 @@
 import sys
 import os
 
-sys.path.append('/Users/raphaelravinet/Code')
+sys.path.append(os.getenv("CODE_PATH"))
+sys.path.append(os.getenv("FIN_DATABASE_PATH"))
 
 import pandas as pd
 import numpy as np

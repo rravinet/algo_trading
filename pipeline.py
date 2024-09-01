@@ -1,4 +1,8 @@
 # %%
+import os
+import sys
+sys.path.append(os.getenv("CODE_PATH"))
+sys.path.append(os.getenv("FIN_DATABASE_PATH"))
 import pandas as pd
 import yaml
 import numpy as np
