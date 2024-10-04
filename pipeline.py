@@ -24,11 +24,17 @@ from algo_trading.data_fetcher import DataFetcher
 
 # %%
 class Pipeline:
-    def __init__(self, tickers, config_file= '../config.yaml'):
+    def __init__(self, tickers, config_file= None):
         if isinstance(tickers,str):
             self.tickers = [tickers]
         else:
             self.tickers = tickers
+        
+        if config_file is None:
+            config_file = os.getenv("CONFIG_FILE_PATH")
+
+        if not config_file:
+            raise FileNotFoundError("Configuration file path not provided or not found in environment variables.")
         
         with open(config_file, 'r') as file:
             self.config = yaml.safe_load(file)

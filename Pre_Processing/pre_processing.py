@@ -47,8 +47,7 @@ class PreProcessing:
         self.setting_index()
         return self
     
-    
-        ###need to add pre processing steps for the financial news and company level data
+
 
     
 

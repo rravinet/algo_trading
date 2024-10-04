@@ -94,6 +94,7 @@ class DataFetcher:
             
             with engine.connect() as connection:
                 result = pd.read_sql(query.statement, connection)
+                result.sort_values((['ticker', 'date']), inplace=True)
             
             logging.info(f"Succesfully fetched data for {self.tickers}")
         
